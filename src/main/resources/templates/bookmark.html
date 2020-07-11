@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
+    <!-- Google Fonts -->
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,500,700&display=swap">
+    <!-- Bootstrap core CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Material Design Bootstrap -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/css/mdb.min.css" rel="stylesheet">
+    <style>
+        .main-content {
+            margin-top: 100px;
+        }
+
+        .canhiem-text {
+            color: red;
+        }
+
+        .hoiphuc-text {
+            color: green;
+        }
+
+        .center {
+            text-align: center;
+        }
+
+        .content-news div.col-md-12 {
+            margin-top: 10px;
+        }
+    </style>
+    <title>Tin đã lưu</title>
+</head>
+
+<body>
+    <nav class="navbar fixed-top navbar-expand-lg navbar-dark blue scrolling-navbar">
+        <a class="navbar-brand" href="#"><i class="fas fa-viruses"></i><strong>COVID-19</strong></a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarSupportedContent">
+            <ul class="navbar-nav mr-auto">
+                <li class="nav-item active">
+                    <a class="nav-link" href="/"><i class="fas fa-home"></i> Trang chủ<span
+                            class="sr-only">(current)</span></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-toggle="modal" data-target="#modalLoginForm"><i
+                            class="fas fa-sign-in-alt"></i> Đăng nhập</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" data-toggle="modal" data-target="#modalRegisterForm"><i
+                            class="fas fa-user-plus"></i> Đăng ký</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="bookmark-link"><i class="far fa-bookmark"></i> Tin xem sau</a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link" href="#" id="sign-out"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
+                </li>
+            </ul>
+            <ul class="navbar-nav nav-flex-icons">
+                <li class="nav-item">
+                    <a class="nav-link"><i class="fab fa-facebook-f"></i></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"><i class="fab fa-twitter"></i></a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link"><i class="fab fa-instagram"></i></a>
+                </li>
+            </ul>
+        </div>
+    </nav>
+    <div class="container main-content">
+        <div class="row">
+            <br>
+            <div class="col-md-12">
+                <h1 class="center">Tin đã lưu</h1>
+                <input type="text" class="form-control" id="input-search" placeholder="Tìm kiếm">
+                <div style="margin-top: 20px; display: none;" class="row loading-icon">
+                    <div class="col-md-12">
+                        <div class="text-center">
+                            <div class="spinner-border" role="status">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <table style="display: none;" class="table table-striped table-saved-news">
+                    <thead>
+                        <tr>
+                            <th>Tiêu đề</th>
+                            <th>
+                                Link
+                            </th>
+                            <th>Nguồn</th>
+                            <th>Thời gian lưu</th>
+                            <th>Hành động</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+
+                    </tbody>
+
+                </table>
+            </div>
+        </div>
+    </div>
+    <!--Modal Login-->
+    <div class="modal fade" id="modalLoginForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <h4 class="modal-title w-100 font-weight-bold">Đăng nhập</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body mx-3">
+                    <div class="md-form mb-5">
+                        <i class="fas fa-envelope prefix grey-text"></i>
+                        <input type="email" id="email-for-auth" class="form-control validate">
+                        <label data-error="wrong" data-success="right" for="defaultForm-email">Email</label>
+                    </div>
+
+                    <div class="md-form mb-4">
+                        <i class="fas fa-lock prefix grey-text"></i>
+                        <input type="password" id="pass-for-auth" class="form-control validate">
+                        <label data-error="wrong" data-success="right" for="defaultForm-pass">Password</label>
+                    </div>
+
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <button class="btn btn-default" id="button-login">
+                        <span class="spinner-border spinner-border-sm" style="display: none;" role="status"
+                            aria-hidden="true"></span>
+                        &nbsp;Đăng nhập</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--Modal Sign Up-->
+    <div class="modal fade" id="modalRegisterForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header text-center">
+                    <h4 class="modal-title w-100 font-weight-bold">Đăng ký tài khoản mới</h4>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body mx-3">
+                    <div class="md-form mb-5">
+                        <i class="fas fa-envelope prefix grey-text"></i>
+                        <input type="email" id="email-for-register" class="form-control validate">
+                        <label data-error="wrong" data-success="right" for="orangeForm-email">Email</label>
+                    </div>
+
+                    <div class="md-form mb-4">
+                        <i class="fas fa-lock prefix grey-text"></i>
+                        <input type="password" id="pass-for-register" class="form-control validate">
+                        <label data-error="wrong" data-success="right" for="orangeForm-pass">Password</label>
+                    </div>
+
+                </div>
+                <div class="modal-footer d-flex justify-content-center">
+                    <button class="btn btn-deep-orange" id="button-sign-up">Đăng ký</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- JQuery -->
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <!-- Bootstrap tooltips -->
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/umd/popper.min.js"></script>
+    <!-- Bootstrap core JavaScript -->
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.5.0/js/bootstrap.min.js"></script>
+    <!-- MDB core JavaScript -->
+    <script type="text/javascript"
+        src="https://cdnjs.cloudflare.com/ajax/libs/mdbootstrap/4.19.1/js/mdb.min.js"></script>
+    <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyALyG89PJNAflSxuoi0BFptvSkRdTSjpaA&callback=initMap"
+        async defer></script>
+    <!-- The core Firebase JS SDK is always required and must be listed first -->
+    <script src="https://www.gstatic.com/firebasejs/7.16.0/firebase-app.js"></script>
+
+    <!-- TODO: Add SDKs for Firebase products that you want to use
+     https://firebase.google.com/docs/web/setup#available-libraries -->
+    <script src="https://www.gstatic.com/firebasejs/7.16.0/firebase-auth.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.16.0/firebase-analytics.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/7.16.0/firebase-firestore.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/firebase/7.16.0/firebase-database.min.js"></script>
+    <script>
+        $('#bookmark-link').hide();
+        $('#sign-out').hide();
+    </script>
+    <script>
+        // Your web app's Firebase configuration
+        var firebaseConfig = {
+            apiKey: "AIzaSyAeffnJEV2RbXbEBsTjV_ykLq5ymOOshZw",
+            authDomain: "covid-firebase-400e4.firebaseapp.com",
+            databaseURL: "https://covid-firebase-400e4.firebaseio.com",
+            projectId: "covid-firebase-400e4",
+            storageBucket: "covid-firebase-400e4.appspot.com",
+            messagingSenderId: "259096144507",
+            appId: "1:259096144507:web:efdd3874c4aa4db64fd0de",
+            measurementId: "G-M2RCZ9S956"
+        };
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        firebase.analytics();
+        var database = firebase.database();
+        function writePost(postId, title, content) {
+            firebase.database().ref('BOOKMARK/' + postId).set({
+                title: title,
+                content: content
+            })
+        }
+        function loginFirebase(email, password) {
+            if (email && password) {
+                firebase.auth().signInWithEmailAndPassword(email, password).then(() => {
+                    $('#modalLoginForm').modal('hide');
+                    alert("Đăng nhập thành công!");
+                }).catch(function (error) {
+                    var errorCode = error.code;
+                    var errorMessage = error.message;
+                    console.log(error);
+                    switch (errorCode) {
+                        case 'auth/invalid-email':
+                            alert("Email không hợp lệ!");
+                            break;
+                        case 'auth/user-disabled':
+                            alert("Tài khoản đã bị khóa!");
+                            break;
+                        case 'auth/user-not-found':
+                            let a = confirm("Tài khoản chưa được đăng ký, bạn có muốn đăng ký tài khoản mới không?");
+                            if (a) {
+                                $('#modalRegisterForm').modal('show');
+                                $('#email-for-register').val(email);
+                                $('#pass-for-register').val(password);
+                            }
+                            break;
+                        default:
+                            alert("Sai mật khẩu, vui lòng nhập lại!");
+                            break;
+                    }
+                });
+            } else {
+                alert("Vui lòng điền đầy đủ tài khoản và mật khẩu!");
+            }
+        }
+        function signUpFirebase(email, password) {
+            if (email && password) {
+                firebase.auth().createUserWithEmailAndPassword(email, password).then(() => {
+                    $('#modalRegisterForm').modal('hide');
+                    alert('Đăng ký tài khoản thành công!')
+                }).catch(function (error) {
+                    // Handle Errors here.
+                    var errorCode = error.code;
+                    var errorMessage = error.message;
+                    console.log(error);
+                    switch (errorCode) {
+                        case 'auth/email-already-in-use':
+                            alert("Email này đã được đăng ký rồi, vui lòng đăng ký lại với email khác!");
+                            break;
+                        case 'auth/invalid-email':
+                            alert("Email không hợp lệ!");
+                            break;
+                        case 'auth/weak-password':
+                            alert("Mật khẩu quá ngắn!");
+                            break;
+                        default:
+                            alert('email/password accounts are not enabled');
+                            break;
+                    }
+                });
+            } else {
+                alert("Vui lòng điền đầy đủ tài khoản và mật khẩu!");
+            }
+        }
+        firebase.auth().onAuthStateChanged(function (user) {
+            if (user) {
+                $('#sign-out').show();
+                $('.content-news .bookmark').show();
+                $('#bookmark-link').show();
+                console.log(user.uid);
+                loadData(user.uid);
+            } else {
+                $('#sign-out').hide();
+                $('.content-news .bookmark').hide();
+                $('#bookmark-link').hide();
+            }
+            checkCurrentUser();
+        });
+        function signOut() {
+            firebase.auth().signOut().then(function () {
+                alert("Đăng xuất thành công!");
+            }).catch(function (error) {
+                alert("Đăng xuất thất bại");
+                console.log(error);
+            });
+        }
+    </script>
+    <script>
+        function filterSavedNews() {
+            $("#input-search").on("keyup", function () {
+                var value = $(this).val().toLowerCase();
+                $(".table-saved-news tr").filter(function () {
+                    $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+            });
+        }
+        function timeStampstoDateTime(timeStamps) {
+            let time = new Date(timeStamps).toLocaleDateString("vi-VN");
+            let date = new Date(timeStamps).toLocaleTimeString("vi-VN");
+            let string = time + " " + date;
+            return string;
+        }
+        function checkCurrentUser() {
+            var user = firebase.auth().currentUser;
+            if (user) {
+
+            } else {
+                window.location.href = "index";
+            }
+        }
+        function loadData(uid) {
+            $('.loading-icon').show();
+            var html = "";
+            var data = firebase.database().ref('/BOOKMARK').orderByChild('uid').equalTo(uid).once('value', (snapshot) => {
+                snapshot.forEach(child => {
+                    console.log(child.val());
+                    html += '<tr> <td>' + child.val().title + '</td> <td><a target = "blank" href = "' + child.val().link + '">' + child.val().link + '</a></td><td>' + child.val().source + '</td><td>' + timeStampstoDateTime(child.val().time) + '</td><td> <button type="button" onclick="deleteThisRow(' + child.val().time + ',this);" class="btn btn-danger btn-sm m-0"><i class="far fa-trash-alt"></i> Xóa tin!</button> </td></tr>';
+                });
+            }).then(() => {
+                $('.table-saved-news tbody').html(html);
+                $('.loading-icon').hide();
+                $('table').show();
+            });
+
+        }
+        function deleteThisRow(timestamp, element) {
+            let a = confirm("Bạn có muốn xóa tin này không?");
+            if (a) {
+                let parent = element.parentElement.parentElement;
+                let id = "id" + timestamp;
+                firebase.database().ref('BOOKMARK/' + id).remove().then(() => {
+                    alert("Xóa tin thành công!");
+                    parent.remove();
+                }).catch((error) => {
+                    alert("Xóa tin không thành công!")
+                    console.log(error);
+                })
+            }
+        }
+        $(() => {
+            filterSavedNews();
+        })
+        $('#button-login').click(() => {
+            let email = $('#email-for-auth').val();
+            let pass = $('#pass-for-auth').val();
+            loginFirebase(email, pass);
+        });
+        $('#button-sign-up').click(() => {
+            let email = $('#email-for-register').val();
+            let pass = $('#pass-for-register').val();
+            signUpFirebase(email, pass);
+        });
+        $('#sign-out').click(() => {
+            let a = confirm("Bạn có muốn đăng xuất không?");
+            if (a) {
+                signOut();
+            }
+        });
+    </script>
+</body>
+
+</html>
