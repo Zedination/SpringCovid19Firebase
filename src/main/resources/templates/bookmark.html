@@ -219,12 +219,6 @@
         firebase.initializeApp(firebaseConfig);
         firebase.analytics();
         var database = firebase.database();
-        function writePost(postId, title, content) {
-            firebase.database().ref('BOOKMARK/' + postId).set({
-                title: title,
-                content: content
-            })
-        }
         function loginFirebase(email, password) {
             if (email && password) {
                 firebase.auth().signInWithEmailAndPassword(email, password).then(() => {
@@ -364,11 +358,30 @@
         }
         $(() => {
             filterSavedNews();
+            //hiển thị thay đổi khi BOOKMARK thêm nút con
+            let childaddcheck = database.ref("/BOOKMARK").on('child_added', () => {
+                var user = firebase.auth().currentUser;
+                loadData(user.uid);
+            })
+            let childchangedcheck = database.ref("/BOOKMARK").on('child_changed', () => {
+                var user = firebase.auth().currentUser;
+                loadData(user.uid);
+            })
+            let childremovedcheck = database.ref("/BOOKMARK").on('child_removed', () => {
+                var user = firebase.auth().currentUser;
+                loadData(user.uid);
+            })
+            let childmovedcheck = database.ref("/BOOKMARK").on('child_moved', () => {
+                var user = firebase.auth().currentUser;
+                loadData(user.uid);
+            })
         })
         $('#button-login').click(() => {
             let email = $('#email-for-auth').val();
             let pass = $('#pass-for-auth').val();
             loginFirebase(email, pass);
+            var user = firebase.auth().currentUser;
+            loadData(user.uid);
         });
         $('#button-sign-up').click(() => {
             let email = $('#email-for-register').val();
