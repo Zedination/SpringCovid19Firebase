@@ -4,6 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css"
+        integrity="sha512-aOG0c6nPNzGk+5zjwyJaoRUgCdOrfSDhmMID2u4+OIslr0GjpLKo7Xm0Ao3xmpM4T8AmIouRkqwj1nrdVsLKEQ=="
+        crossorigin="anonymous" />
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.8.2/css/all.css">
     <!-- Google Fonts -->
@@ -58,7 +61,8 @@
                             class="fas fa-user-plus"></i> Đăng ký</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link" href="/bookmark" id="bookmark-link"><i class="far fa-bookmark"></i> Tin xem sau</a>
+                    <a class="nav-link" href="/bookmark" id="bookmark-link"><i class="far fa-bookmark"></i> Tin xem
+                        sau</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="#" id="sign-out"><i class="fas fa-sign-out-alt"></i> Đăng xuất</a>
@@ -305,6 +309,65 @@
                 </div>
             </div>
         </div>
+        <div style="margin-top: 20px;" class="row">
+            <div class="col-md-9">
+                <!-- Card -->
+                <div class="card">
+
+                    <!-- Card content -->
+                    <div class="card-body">
+                        <input type="text" id="tags-chart" class="form-control"
+                            placeholder="Nhập tên quốc gia/vùng lãnh thổ cần tra cứu"> <button type="button"
+                            id="button-draw-chart" class="btn btn-primary">Tra cứu</button>
+                        <!-- Title -->
+                        <!-- <h4 class="card-title center"><a>Lịch sử trong 7 ngày tại Việt Nam</a></h4> -->
+                        <div id="canvas">
+                            <canvas id="vietnam-chart" width="400" height="400"></canvas>
+                        </div>
+                    </div>
+
+                </div>
+                <!-- Card -->
+            </div>
+            <div class="col-md-3">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="card">
+
+                            <!-- Card content -->
+                            <div class="card-body">
+                                <!-- Title -->
+                                <!-- <h4 class="card-title center"><a>Lịch sử trong 7 ngày tại Việt Nam</a></h4> -->
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h6 class="center">Tương quan các trường hợp nhiễm Covid-19 trên thế giới</h6>
+                                        <canvas id="world-pie-chart" width="400" height="400"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+        
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px;" class="col-md-12">
+                        <div class="card">
+
+                            <!-- Card content -->
+                            <div class="card-body">
+                                <!-- Title -->
+                                <!-- <h4 class="card-title center"><a>Lịch sử trong 7 ngày tại Việt Nam</a></h4> -->
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <h6 class="center">Tương quan các trường hợp nhiễm Covid-19 tại Việt Nam</h6>
+                                        <canvas id="vietnam-pie-chart" width="400" height="400"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+        
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
     </div>
     <!--Modal Login-->
     <div class="modal fade" id="modalLoginForm" tabindex="-1" role="dialog" aria-labelledby="myModalLabel"
@@ -371,8 +434,11 @@
             </div>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.3/dist/Chart.min.js"></script>
     <!-- JQuery -->
     <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.min.js"
+        integrity="sha256-VazP97ZCwtekAsvgPBSUwPFKdrwD3unUfSGVYrahUqU=" crossorigin="anonymous"></script>
     <!-- Bootstrap tooltips -->
     <script type="text/javascript"
         src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.4/umd/popper.min.js"></script>
@@ -630,6 +696,13 @@
             getDataWorld();
             filterDataGlobal();
             getNews();
+            fillTagInput();
+            loadDataForVietNamLineChart('Vietnam');
+            loadDataWorldPie();
+            loadDataVietnamPie();
+            $('#button-draw-chart').click(() => {
+                loadDataForVietNamLineChart($('#tags-chart').val());
+            });
         })
         $('#button-login').click(() => {
             let email = $('#email-for-auth').val();
@@ -647,6 +720,186 @@
                 signOut();
             }
         });
+    </script>
+    <!--Các hàm vẽ biểu đồ-->
+    <script>
+        function getListCountry() {
+            let array = new Array();
+            $.ajax({
+                url: 'https://api.covid19api.com/countries',
+                type: 'get',
+                success: data => {
+                    data.forEach(e => {
+                        array.push(e.Country);
+                    });
+                }
+            });
+            return array;
+        }
+        function fillTagInput() {
+            $("#tags-chart").autocomplete({
+                source: getListCountry()
+            });
+        }
+        function loadDataForVietNamLineChart(country, oldChart) {
+            let newChart;
+            let dateFrom = new Date();
+            dateFrom.setDate(dateFrom.getDate() - 7);
+            let dateTo = new Date();
+            dateTo.setDate(dateTo.getDate());
+            $.ajax({
+                url: 'https://api.covid19api.com/total/country/' + country + '?from=' + dateFrom.toISOString().substring(0, 10) + '&to=' + dateTo.toISOString().substring(0, 10),
+                type: 'get',
+                success: data => {
+                    let arrayConfirmed = new Array();
+                    let arrayDeaths = new Array();
+                    let arrayRecovered = new Array();
+                    data.forEach(e => {
+                        arrayConfirmed.push(e.Confirmed);
+                        arrayDeaths.push(e.Deaths);
+                        arrayRecovered.push(e.Recovered);
+                    });
+                    $('#canvas').html('<canvas id="vietnam-chart" width="400" height="400"></canvas>');
+                    drawLineChartVietnam(arrayConfirmed, arrayDeaths, arrayRecovered, country);
+                },
+                error: () => {
+                    alert("Vui lòng kiểm tra lại tên quốc gia/vùng lãnh thổ cần tra cứu!");
+                }
+            })
+        }
+        function drawLineChartVietnam(arrayConfirmed, arrayDeaths, arrayRecovered, country) {
+            let ctx = document.getElementById('vietnam-chart').getContext('2d');
+            let date1 = new Date();
+            date1.setDate(date1.getDate() - 1);
+            let date2 = new Date();
+            date2.setDate(date2.getDate() - 2);
+            let date3 = new Date();
+            date3.setDate(date3.getDate() - 3);
+            let date4 = new Date();
+            date4.setDate(date4.getDate() - 4);
+            let date5 = new Date();
+            date5.setDate(date5.getDate() - 5);
+            let date6 = new Date();
+            date6.setDate(date6.getDate() - 6);
+            let date7 = new Date();
+            date7.setDate(date7.getDate() - 7);
+            let sevenDay = [date7.toISOString().substring(0, 10), date6.toISOString().substring(0, 10), date5.toISOString().substring(0, 10), date4.toISOString().substring(0, 10), date3.toISOString().substring(0, 10), date2.toISOString().substring(0, 10), date1.toISOString().substring(0, 10)];
+            let config = {
+                type: 'line',
+                data: {
+                    labels: sevenDay,
+                    datasets: [{
+                        label: 'Ca nhiễm',
+                        backgroundColor: 'rgb(255, 0, 0)',
+                        borderColor: 'rgb(255, 0, 0)',
+                        data:
+                            arrayConfirmed
+                        ,
+                        fill: false,
+                    }, {
+                        label: 'Tử Vong',
+                        fill: false,
+                        backgroundColor: 'rgb(0, 0, 0)',
+                        borderColor: 'rgb(0, 0, 0)',
+                        data:
+                            arrayDeaths
+                        ,
+                    }, {
+                        label: 'Hồi phục',
+                        fill: false,
+                        backgroundColor: 'rgb(0, 128, 0)',
+                        borderColor: 'rgb(0, 128, 0)',
+                        data:
+                            arrayRecovered
+                        ,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    title: {
+                        display: true,
+                        text: 'Lịch sử lây nhiễm tại ' + country + ' trong 7 ngày gần nhất'
+                    },
+                    tooltips: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    hover: {
+                        mode: 'nearest',
+                        intersect: true
+                    },
+                    scales: {
+                        xAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Ngày'
+                            }
+                        }],
+                        yAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Số lượng'
+                            }
+                        }]
+                    }
+                }
+            };
+            let vietNamLineChart = new Chart(ctx, config);
+        }
+        function loadDataWorldPie() {
+            let Confirmed = 0;
+            let Deaths = 0;
+            let Recovered = 0;
+            $.ajax({
+                url: 'https://api.covid19api.com/world/total',
+                type: 'get',
+                success: data => {
+                    Confirmed = data.TotalConfirmed;
+                    Deaths = data.TotalDeaths;
+                    Recovered = data.TotalRecovered;
+                    let chartElement = document.getElementById('world-pie-chart').getContext('2d');
+                    drawPieChart(Confirmed, Deaths, Recovered, chartElement);
+                }
+            });
+        }
+        function loadDataVietnamPie(){
+            $.ajax({
+                url: '/covid-19-vietnam',
+                type: 'get',
+                success: data =>{
+                    let chartElement = document.getElementById('vietnam-pie-chart').getContext('2d');
+                    drawPieChart(data.caNhiem, data.tuVong, data.hoiPhuc, chartElement);
+
+                }
+            })
+        }
+        function drawPieChart(Confirmed, Deaths, Recovered, ctx) {
+            let config = {
+                type: 'pie',
+                data: {
+                    datasets: [{
+                        data: [
+                            Confirmed, Deaths, Recovered
+                        ],
+                        backgroundColor: [
+                            'rgb(255, 0, 0)', 'rgb(0, 0, 0)', 'rgb(0, 128, 0)'
+                        ],
+                        label: 'Dataset 1'
+                    }],
+                    labels: [
+                        'Ca nhiễm',
+                        'Tử vong',
+                        'Hồi phục'
+                    ]
+                },
+                options: {
+                    responsive: true
+                }
+            };
+            let worldPieChart = new Chart(ctx, config);
+        }
     </script>
 </body>
 
