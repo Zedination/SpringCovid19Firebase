@@ -474,7 +474,8 @@
             storageBucket: "covid-firebase-400e4.appspot.com",
             messagingSenderId: "259096144507",
             appId: "1:259096144507:web:efdd3874c4aa4db64fd0de",
-            measurementId: "G-M2RCZ9S956"
+            measurementId: "G-M2RCZ9S956",
+            messagingSenderId: '259096144507'
         };
         // Initialize Firebase
         firebase.initializeApp(firebaseConfig);
@@ -488,41 +489,23 @@
         }
         const messaging = firebase.messaging();
         messaging.usePublicVapidKey('BGaAfH1NK2cxF3T7b4FnKExokyAG7t6WMBtAZsi_tQ3m3Y00vHxu58yNvUEeBh9mW-EAAt-603xBhbxNZlxPu_I');
-        messaging.getToken().then((currentToken) => {
-            if (currentToken) {
-                console.log(currentToken);
-                // sendTokenToServer(currentToken);
-                // updateUIForPushEnabled(currentToken);
-            } else {
-                // Show permission request.
-                console.log('No Instance ID token available. Request permission to generate one.');
-                // Show permission UI.
-                // updateUIForPushPermissionRequired();
-                // setTokenSentToServer(false);
-            }
-        }).catch((err) => {
-            console.log('An error occurred while retrieving token. ', err);
-            // showToken('Error retrieving Instance ID token. ', err);
-            // setTokenSentToServer(false);
-        });
-        // Callback fired if Instance ID token is updated.
-        messaging.onTokenRefresh(() => {
-            messaging.getToken().then((refreshedToken) => {
-                console.log('Token refreshed.');
-                // Indicate that the new Instance ID token has not yet been sent to the
-                // app server.
-                //setTokenSentToServer(false);
-                // Send Instance ID token to app server.
-                //sendTokenToServer(refreshedToken);
-                // ...
-            }).catch((err) => {
-                console.log('Unable to retrieve refreshed token ', err);
-                //showToken('Unable to retrieve refreshed token ', err);
+        messaging
+            .requestPermission()
+            .then(function () {
+                console.log("Notification permission granted.");
+
+                // get the token in the form of promise
+                return messaging.getToken()
+            })
+            .then(function (token) {
+                console.log(token);
+            })
+            .catch(function (err) {
+                console.log("Unable to get permission to notify.", err);
             });
-        });
         messaging.onMessage((payload) => {
             console.log('Message received. ', payload);
-            alert("Thông báo: " + payload.message);
+            alert(payload.data.content);
         });
         function loginFirebase(email, password) {
             if (email && password) {
